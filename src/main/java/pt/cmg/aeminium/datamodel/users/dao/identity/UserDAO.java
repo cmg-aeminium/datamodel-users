@@ -2,14 +2,14 @@
  * Copyright (c) 2024 Carlos Gonçalves (https://www.linkedin.com/in/carlosmogoncalves/)
  * Likely open-source, so copy at will, bugs will be yours as well.
  */
-package pt.cmg.aeminium.knowledge.dao.identity;
+package pt.cmg.aeminium.datamodel.users.dao.identity;
 
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.TypedQuery;
-import org.apache.commons.lang3.StringUtils;
-import pt.cmg.aeminium.knowledge.dao.JPACrudDAO;
-import pt.cmg.aeminium.knowledge.persistence.entities.identity.User;
+import pt.cmg.aeminium.datamodel.users.dao.JPACrudDAO;
+import pt.cmg.aeminium.datamodel.users.entities.identity.User;
 import pt.cmg.jakartautils.jpa.QueryUtils;
 
 /**
