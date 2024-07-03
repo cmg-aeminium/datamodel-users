@@ -8,7 +8,8 @@
     <groupId>pt.cmg.aeminium</groupId>
     <artifactId>datamodel-users</artifactId>
     <version>1.0.0</version>
-    <packaging>jar</packaging>
+    
+    <packaging>ejb</packaging>
 
     <name>datamodel-users</name>
 
@@ -63,6 +64,7 @@
 
         <clean-plugin-version>3.3.2</clean-plugin-version>
         <compiler-plugin-version>3.13.0</compiler-plugin-version>
+        <ejb-plugin-version>3.2.1</ejb-plugin-version>
         <enforcer-plugin-version>3.5.0</enforcer-plugin-version>
         <failsafe-plugin-version>3.3.0</failsafe-plugin-version>
         <install-plugin-version>3.1.2</install-plugin-version>
@@ -96,6 +98,7 @@
         
          <!-- First party dependencies -->
         <aem-jakarta-utils-version>3.0.0</aem-jakarta-utils-version>
+        <aem-datamodel-common-version>1.0.0</aem-datamodel-common-version>
 
     </properties>
 
@@ -155,6 +158,11 @@
             <groupId>pt.cmg</groupId>
             <artifactId>jakartautils</artifactId>
             <version>${aem-jakarta-utils-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>pt.cmg.aeminium</groupId>
+            <artifactId>datamodel-common</artifactId>
+            <version>${aem-datamodel-common-version}</version>
         </dependency>
 
 
@@ -248,6 +256,16 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                
+                <!-- Maven EJB Plugin, for EJBs -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-ejb-plugin</artifactId>
+                    <version>${ejb-plugin-version}</version>
+                    <configuration>
+                        <ejbVersion>4.0</ejbVersion>
+                    </configuration>
                 </plugin>
                 
                 <!-- This creates the actual JAR artifact -->
