@@ -30,7 +30,7 @@ import jakarta.persistence.NamedQuery;
 import jakarta.persistence.QueryHint;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import pt.cmg.aeminium.knowledge.persistence.entities.localisation.Language;
+import pt.cmg.aeminium.datamodel.common.entities.localisation.Language;
 
 /**
  * @author Carlos Gonçalves
