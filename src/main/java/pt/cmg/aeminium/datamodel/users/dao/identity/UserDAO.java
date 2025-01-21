@@ -20,11 +20,19 @@ import pt.cmg.jakartautils.jpa.QueryUtils;
 @Stateless
 public class UserDAO extends JPACrudDAO<User> {
 
+    private static final String BASE_SELECT_USER_QUERY = "SELECT u FROM User u ";
+    private static final String BASE_COUNT_USER_QUERY = "SELECT COUNT(u) FROM User u ";
+
     public UserDAO() {
         super(User.class);
     }
 
-    public record UserFilter(Set<User.Status> status, Set<Role.Name> roles, String email, Long size, Long offset) {
+    public record UserFilter(
+        Set<User.Status> status,
+        Set<Role.Name> roles,
+        String email,
+        Long size,
+        Long offset) {
     };
 
     public User findByEmail(String email) {
@@ -42,42 +50,11 @@ public class UserDAO extends JPACrudDAO<User> {
 
     public List<User> findByFiltered(UserFilter userFilter) {
 
-        TypedQuery<User> query = null;
+        String statement = filterQueryBuilder(BASE_SELECT_USER_QUERY, userFilter);
 
-        StringBuilder select = new StringBuilder("SELECT u FROM User u ");
-        StringBuilder filter = new StringBuilder("");
-        String sqlFilter = "WHERE ";
+        TypedQuery<User> query = getEntityManager().createQuery(statement, User.class);
 
-        if (!userFilter.status().isEmpty()) {
-            filter.append(sqlFilter).append("u.status IN :status ");
-            sqlFilter = "AND ";
-        }
-
-        if (!userFilter.roles().isEmpty()) {
-            select.append("JOIN u.roles r ");
-            filter.append(sqlFilter).append("r.name IN :roles ");
-            sqlFilter = "AND ";
-        }
-
-        if (userFilter.email() != null && !userFilter.email().isBlank()) {
-            filter.append(sqlFilter).append("u.email = :email ");
-            sqlFilter = "AND ";
-        }
-
-        String statement = select.append(filter).toString();
-        query = getEntityManager().createQuery(statement, User.class);
-
-        if (!userFilter.status().isEmpty()) {
-            query.setParameter("status", userFilter.status());
-        }
-
-        if (!userFilter.roles().isEmpty()) {
-            query.setParameter("roles", userFilter.roles());
-        }
-
-        if (userFilter.email() != null && !userFilter.email().isBlank()) {
-            query.setParameter("email", userFilter.email());
-        }
+        query = setFilterParameters(query, userFilter);
 
         if (userFilter.size() != null) {
             query.setMaxResults(userFilter.size().intValue());
@@ -88,6 +65,60 @@ public class UserDAO extends JPACrudDAO<User> {
         }
 
         return QueryUtils.getResultListFromQuery(query);
+    }
+
+    public int countFiltered(UserFilter userFilter) {
+
+        String statement = filterQueryBuilder(BASE_COUNT_USER_QUERY, userFilter);
+
+        TypedQuery<User> query = getEntityManager().createQuery(statement, User.class);
+
+        query = setFilterParameters(query, userFilter);
+
+        return QueryUtils.getIntResultFromQuery(query);
+    }
+
+    private String filterQueryBuilder(String baseSelectQuery, UserFilter filter) {
+
+        StringBuilder selectText = new StringBuilder(baseSelectQuery);
+        StringBuilder filterText = new StringBuilder("");
+        String prefix = "WHERE ";
+
+        if (!filter.status().isEmpty()) {
+            filterText.append(prefix).append("u.status IN :status ");
+            prefix = "AND ";
+        }
+
+        if (!filter.roles().isEmpty()) {
+            selectText.append("JOIN u.roles r ");
+            filterText.append(prefix).append("r.name IN :roles ");
+            prefix = "AND ";
+        }
+
+        if (filter.email() != null && !filter.email().isBlank()) {
+            filterText.append(prefix).append("u.email = :email ");
+            prefix = "AND ";
+        }
+
+        return selectText.append(filterText).toString();
+
+    }
+
+    private <T> TypedQuery<T> setFilterParameters(TypedQuery<T> query, UserFilter filter) {
+
+        if (!filter.status().isEmpty()) {
+            query.setParameter("status", filter.status());
+        }
+
+        if (!filter.roles().isEmpty()) {
+            query.setParameter("roles", filter.roles());
+        }
+
+        if (filter.email() != null && !filter.email().isBlank()) {
+            query.setParameter("email", filter.email());
+        }
+
+        return query;
     }
 
 }
